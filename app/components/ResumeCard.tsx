@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import ScoreCircle from "./scoreCircle";
+import ScoreCircle from "./ScoreCircle";
 
 const ResumeCard = ({
   resume: { id, companyName, jobTitle, feedback, imagePath },
@@ -25,7 +25,7 @@ const ResumeCard = ({
           <img
             src={imagePath}
             alt="resume"
-            className="w-full h-[350px] max-sm:h-[200px] object- object-top"
+            className="w-full h-[350px] max-sm:h-[200px] object-cover object-top"
           />
         </div>
       </div>
