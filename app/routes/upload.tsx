@@ -30,46 +30,50 @@ const Upload = () => {
     file: File;
   }) => {
     setIsProcessing(true);
+
     setStatusText("Uploading the file...");
     const uploadedFile = await fs.upload([file]);
-    if (!uploadedFile) {
-      setStatusText("Error: Failed uploading file");
-    }
+    if (!uploadedFile) return setStatusText("Error: Failed uploading file");
+     
     setStatusText("Converting to Image...");
     const imageFile = await convertPdfToImage(file);
-    if (!imageFile.file) {
-      setStatusText("Error: Failed converting PDF to image");
-    }
+    if (!imageFile.file) return setStatusText("Error: Failed converting PDF to image");
+  
+
     setStatusText("Uploading image...");
     const uploadedImage = await fs.upload([imageFile.file]);
-    if (!uploadedImage) {
-      setStatusText("Error: Failed uploading image");
-    }
+    if (!uploadedImage) return setStatusText("Error: Failed to upload image");
+
     setStatusText("Preparing data...");
     const uuid = generateUUID();
     const data = {
       id: uuid,
-      resumePath: uploadedFile?.path,
-      imagePath: uploadedImage?.path,
+      resumePath: uploadedFile.path,
+      imagePath: uploadedImage.path,
       companyName,
       jobTitle,
       jobDescription,
       feedback: "",
     };
-    await kv.set(`resume: ${uuid}`, JSON.stringify(data));
-    setStatusText("Analyzing resume...");
+    await kv.set(`resume:${uuid}`, JSON.stringify(data));
+
+    setStatusText("Analyzing...");
+
     const feedback = await ai.feedback(
-      uploadedFile?.path,
-      prepareInstructions({ jobTitle, companyName, jobDescription })
+      uploadedFile.path,
+      prepareInstructions({jobTitle, jobDescription})
     );
-    if (!feedback) return setStatusText("Error: Failed analyzing resume");
+    if (!feedback) return setStatusText("Error: Failed to analyze resume");
+    
+    
     const feedbackText =
       typeof feedback.message.content === "string"
         ? feedback.message.content
         : feedback.message.content[0].text;
+
     data.feedback = JSON.parse(feedbackText);
-    await kv.set(`resume: ${uuid}`, JSON.stringify(data));
-    setStatusText("Done! Redirecting to results page...");
+    await kv.set(`resume:${uuid}`, JSON.stringify(data));
+    setStatusText("Analysis complete, redirecting...");
     console.log(data);
     navigate(`/resume/${uuid}`);
   };
@@ -79,19 +83,20 @@ const Upload = () => {
     const form = e.currentTarget.closest("form");
     if (!form) return;
     const formData = new FormData(form);
+
     const companyName = formData.get("company-name") as string;
     const jobTitle = formData.get("job-title") as string;
     const jobDescription = formData.get("job-description") as string;
 
-    if (!file) {
-      return;
-    }
+    if (!file) return;
+
     handleAnalyze({ companyName, jobTitle, jobDescription, file });
   };
 
   return (
     <main className="bg-[url('/images/bg-main.svg')] bg-cover">
       <NavBar />
+      
       <section className="main-section">
         <div className="page-heading py-16">
           <h1>Smart feedback for your dream job</h1>

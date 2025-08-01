@@ -19,16 +19,15 @@ const Resume = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-      if (!isLoading && !auth.isAuthenticated) {
-        navigate(`/auth?next=/resume/${id}`);
-      }
-    }, [isLoading]);
+    if (!isLoading && !auth.isAuthenticated)
+      navigate(`/auth?next=/resume/${id}`);
+  }, [isLoading]);
 
   useEffect(() => {
     const loadResume = async () => {
-      const resume = await kv.get(`resume: ${id}`);
-
+      const resume = await kv.get(`resume:${id}`);
       if (!resume) return;
+
       const data = JSON.parse(resume);
 
       const resumeBlob = await fs.read(data.resumePath);
@@ -45,11 +44,13 @@ const Resume = () => {
       setImageUrl(imageUrl);
 
       setFeedback(data.feedback);
-      console.log({ resumeUrl, imageUrl, feedback });
+      console.log({ resumeUrl, imageUrl, feedback: data.feedback });
     };
 
     loadResume();
   }, [id]);
+
+  console.log("feedback ", feedback);
 
   return (
     <main className="!pt-0">
@@ -68,7 +69,6 @@ const Resume = () => {
               <a href={resumeUrl} target="_blank" rel="noopener noreferrer">
                 <img
                   src={imageUrl}
-                  alt=""
                   className="h-full w-full object-contain rounded-2xl"
                   title="resume"
                 />
@@ -80,10 +80,12 @@ const Resume = () => {
           <h2 className="text-4xl !text-black font-bold">Resume Review</h2>
           {feedback ? (
             <div className="flex flex-col gap-8 animate-in fade-in duration-1000">
-              <Summary feedback = {feedback}/>
-              <ATS score={feedback.ATS.score || 0} suggestions = {feedback.padStart.tips || []} 
-             />
-              <Details feedback = {feedback}/>
+              <Summary feedback={feedback} />
+              <ATS
+                score={feedback.ATS.score || 0}
+                suggestions={feedback.ATS.tips || []}
+              />
+              <Details feedback={feedback} />
             </div>
           ) : (
             <img src="/images/resume-scan-2.gif" alt="" className="w-full" />
@@ -93,5 +95,4 @@ const Resume = () => {
     </main>
   );
 };
-
 export default Resume;
