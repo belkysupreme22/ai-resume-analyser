@@ -4,7 +4,7 @@ A modern, full-stack React application for uploading, tracking, and receiving AI
 This project leverages [Puter](https://puter.com/) for cloud storage, authentication, AI feedback, and key-value data management.
 
 **Live Demo:**  
-[ai-resume-analyser.puter.app]() 
+[ai-resume-analyser.puter.app](https://puter.com/app/ai-powered-resume-analyser) 
 
 ## Features
 
