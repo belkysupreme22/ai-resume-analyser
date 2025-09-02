@@ -129,7 +129,7 @@ const Upload = () => {
                   type="text"
                   name="job-title"
                   placeholder="Job Title"
-                  id="company-name"
+                  id="job-title"
                 />
               </div>
               <div className="form-div">
@@ -138,7 +138,7 @@ const Upload = () => {
                   rows={5}
                   name="job-description"
                   placeholder="Job Description"
-                  id="company-name"
+                  id="job-description"
                 />
               </div>
               <div className="form-div">
